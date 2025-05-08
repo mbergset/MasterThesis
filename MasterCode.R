@@ -26,7 +26,7 @@ library(broom) #for tidying model outputs into data frames
 Sys.setlocale(locale='no_NB.utf8') 
 
 #Set working directory to the folder where your data is located
-setwd('C:/Users/mberg/OneDrive - NTNU/Documents/MSc Natural Resouces Management/Master yeyeye')
+setwd('C:/Users/path/to/your/folder')
 
 #Import fonts
 font_import()
