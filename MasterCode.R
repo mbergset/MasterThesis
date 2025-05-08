@@ -26,7 +26,7 @@ library(broom) #for tidying model outputs into data frames
 Sys.setlocale(locale='no_NB.utf8') 
 
 #Set working directory to the folder where your data is located
-setwd('C:/Users/path/to/your/folder')
+setwd('C:/Users/path/to/where/data/is/located')
 
 #Import fonts
 font_import()
@@ -64,7 +64,6 @@ data2 <- data2 %>%
 
 #Explore dataset----------------------------------------------------------------
 #Check distribution of response variable, intact = 0 vs lost = 1
-hist(data2$RV)
 percent_rv <- prop.table(table(data2$RV)) * 100
 print(percent_rv)
 
@@ -123,24 +122,22 @@ correlations
 
 corrplot(correlations, method = 'number', order = "hclust")
 
-#Make model to explain loss of peatland-----------------------------------------
+#Select variables explaining loss of peatland-----------------------------------
 #Make new dataset called PA train to use for modelling
 pa_train <- data2
 
 #First make integer values to numeric
 pa_train <- pa_train %>%
-  mutate(RV = as.numeric(RV), 
-         hoyde = as.numeric(hoyde), 
-         hyttefelt_ = as.numeric(hyttefelt_), 
-         treeline = as.factor (treeline),
-         hundrebelt = as.factor (hundrebelt))
+  mutate(across(everything(), as.numeric)) %>%
+  mutate(treeline = as.factor(treeline),
+         hundrebelt = as.factor(hundrebelt))
 
 #Drop variables that are irrelevant for the analysis
 pa_train <- pa_train |> select(-peat_cat)
 pa_train <- as.data.frame(pa_train) #plotFOP() expects a data.frame
 
 
-#Plots showiing occurrence-variable relationships
+#Plots showing occurrence-variable relationships
 par(mfrow=c(3,3)) #plotting window with three columns and three rows
 for (i in 2:10) plotFOP(pa_train, i,intervals=500)
 for (i in 11:19) plotFOP(pa_train,i,intervals=500)
@@ -197,7 +194,6 @@ EVselect <- selectEV(DVselect$dvdata,
                      interaction = FALSE, 
                      write = FALSE) 
 
-
 #How many derived variables that survived the first Chi-squared test:
 summary(DVselect$dvdata)
 
@@ -219,7 +215,7 @@ print(trail)
 #Get model formula
 EVselect$selectedmodel$formula
 
-#Convert 'fdyrk.dist' (only predictor variable) from list to plain numeric vector
+#Convert 'fdyrk.dist' (only predictor variable) from list to plain vector
 EVselect$dvdata$fdyrk.dist <- unlist(EVselect$dvdata$fdyrk.dist)
 
 #Check that the lengths of response and predictor match (important before modeling)
